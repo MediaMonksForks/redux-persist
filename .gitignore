@@ -1,5 +1,3 @@
 node_modules
-lib/
-dist/
-es/
+.idea
 .DS_Store

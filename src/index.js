@@ -4,6 +4,7 @@ import createTransform from './createTransform'
 import getStoredState from './getStoredState'
 import persistStore from './persistStore'
 import purgeStoredState from './purgeStoredState'
+import {Alert} from 'react-native';
 
 // @TODO remove in v5
 const deprecated = (cb, cb2, cb3) => {
@@ -17,5 +18,7 @@ const storages = {
   asyncLocalStorage: deprecatedStorage,
   asyncSessionStorage: deprecatedStorage
 }
+
+Alert.alert('Hello from redux persist');
 
 export { autoRehydrate, createPersistor, createTransform, getStoredState, persistStore, purgeStoredState, storages }

@@ -10,6 +10,10 @@ const config = {
   moduleName: 'ReduxPersist',
   exports: 'named',
   sourceMap: true,
+  external: [ 'react-native' ],
+  globals: {
+    'react-native': 'ReactNative'
+  },
   plugins: [
     nodeResolve({
       jsnext: true
