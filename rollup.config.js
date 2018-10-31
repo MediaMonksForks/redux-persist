@@ -10,9 +10,11 @@ const config = {
   moduleName: 'ReduxPersist',
   exports: 'named',
   sourceMap: true,
-  external: [ 'react-native' ],
+  external: [ 'react-native', 'lodash', 'react-native-fabric'],
   globals: {
-    'react-native': 'ReactNative'
+    'react-native': 'ReactNative',
+    'lodash': 'Lodash',
+    'react-native-fabric': 'ReactNativeFabric'
   },
   plugins: [
     nodeResolve({

@@ -4,6 +4,7 @@ import { KEY_PREFIX } from './constants';
 import { Alert } from 'react-native';
 
 import createAsyncLocalStorage from './defaults/asyncLocalStorage';
+import { recordNonFatalError } from "./crashlytics";
 
 export default function getStoredState(config, onComplete) {
   var storage = config.storage || createAsyncLocalStorage('local');
@@ -25,6 +26,7 @@ export default function getStoredState(config, onComplete) {
     if (err) {
       Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
       console.warn('redux-persist/getStoredState: Error in storage.getAllKeys');
+      recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error in storage.getAllKeys');
       complete(err);
     }
 
@@ -42,6 +44,7 @@ export default function getStoredState(config, onComplete) {
         if (err) {
           Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
           console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
+          recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error restoring data for key:' + key);
         } else restoredState[key] = rehydrate(key, serialized);
         completionCount += 1;
         if (completionCount === restoreCount) complete(null, restoredState);
@@ -60,6 +63,7 @@ export default function getStoredState(config, onComplete) {
     } catch (err) {
       console.warn('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err);
       Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
+      recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
     }
 
     return state;
