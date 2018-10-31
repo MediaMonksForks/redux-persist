@@ -2,6 +2,8 @@ import { KEY_PREFIX, REHYDRATE } from './constants'
 import createAsyncLocalStorage from './defaults/asyncLocalStorage'
 import purgeStoredState from './purgeStoredState'
 import stringify from 'json-stringify-safe'
+import {Alert} from 'react-native';
+import { recordNonFatalError } from "./crashlytics";
 
 export default function createPersistor (store, config) {
   // defaults
@@ -81,7 +83,9 @@ export default function createPersistor (store, config) {
           }, data)
           state = stateSetter(state, key, value)
         } catch (err) {
-          if (process.env.NODE_ENV !== 'production') console.warn(`Error rehydrating data for key "${key}"`, subState, err)
+          console.warn(`Error rehydrating data for key "${key}"`, subState, err)
+          Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"`);
+          recordNonFatalError('Persist Error', 'redux-persist/adhocRehydrate: Error rehydrating data for key' + key + ' ' + (err || '').toString());
         }
       })
     } else state = incoming
@@ -105,7 +109,12 @@ export default function createPersistor (store, config) {
 
 function warnIfSetError (key) {
   return function setError (err) {
-    if (err && process.env.NODE_ENV !== 'production') { console.warn('Error storing data for key:', key, err) }
+    if (err) {
+      console.warn('Error storing data for key:', key, err);
+      Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key);
+      recordNonFatalError('Persist Error', 'redux-persist/warnIfSetError: Error storing data' +
+        ' for key:' + key + ' ' + (err || '').toString());
+    }
   }
 }
 
