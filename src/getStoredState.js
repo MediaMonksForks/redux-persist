@@ -27,8 +27,12 @@ export default function getStoredState (config, onComplete) {
       complete(err)
     }
 
+
     let persistKeys = allKeys.filter((key) => key.indexOf(keyPrefix) === 0).map((key) => key.slice(keyPrefix.length))
     let keysToRestore = persistKeys.filter(passWhitelistBlacklist)
+
+    recordNonFatalError('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
+    console.log('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
 
     let restoreCount = keysToRestore.length
     if (restoreCount === 0) complete(null, restoredState)

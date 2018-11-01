@@ -37,6 +37,9 @@ export default function getStoredState(config, onComplete) {
     });
     var keysToRestore = persistKeys.filter(passWhitelistBlacklist);
 
+    recordNonFatalError('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
+    console.log('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
+
     var restoreCount = keysToRestore.length;
     if (restoreCount === 0) complete(null, restoredState);
     keysToRestore.forEach(function (key) {

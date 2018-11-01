@@ -67,7 +67,6 @@ export default function createPersistor(store, config) {
           return transformer.in(subState, key);
         }, stateGetter(store.getState(), key));
         if (isEmpty(endState)) {
-          Alert.alert('redux-persist/subscribe: Saving an empty value for' + key);
           recordNonFatalError('Persist Error', 'redux-persist/subscribe: Saving an empty value for' + key);
         }
         if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key));
