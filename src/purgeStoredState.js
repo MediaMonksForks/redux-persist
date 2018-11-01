@@ -1,4 +1,5 @@
 import { KEY_PREFIX } from './constants'
+import { recordNonFatalError } from "./crashlytics";
 
 export default function purgeStoredState (deviceID, config, keys) {
   recordNonFatalError('Persist Error', deviceID + ': purgeStoredState ' + keys);
