@@ -1,6 +1,8 @@
 import { KEY_PREFIX } from './constants'
 
-export default function purgeStoredState (config, keys) {
+export default function purgeStoredState (deviceID, config, keys) {
+  recordNonFatalError('Persist Error', deviceID + ': purgeStoredState ' + keys);
+
   const storage = config.storage
   const keyPrefix = config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX
 

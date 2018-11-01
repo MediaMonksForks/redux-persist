@@ -110,7 +110,7 @@ export default function createPersistor (deviceID, store, config) {
     rehydrate: adhocRehydrate,
     pause: () => { paused = true },
     resume: () => { paused = false },
-    purge: (keys) => purgeStoredState({storage, keyPrefix}, keys)
+    purge: (keys) => purgeStoredState(deviceID, {storage, keyPrefix}, keys)
   }
 }
 
