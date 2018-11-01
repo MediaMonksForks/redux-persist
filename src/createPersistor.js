@@ -47,6 +47,8 @@ export default function createPersistor (store, config) {
 
     const len = storesToProcess.length
 
+    recordNonFatalError('Non Fatal', 'Saving in store');
+
     // time iterator (read: debounce)
     if (timeIterator === null) {
       timeIterator = setInterval(() => {
