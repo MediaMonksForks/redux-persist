@@ -4,6 +4,7 @@ import purgeStoredState from './purgeStoredState';
 import stringify from 'json-stringify-safe';
 import { Alert } from 'react-native';
 import { recordNonFatalError } from "./crashlytics";
+import { isEmpty } from 'lodash-es';
 
 export default function createPersistor(store, config) {
   // defaults
@@ -51,8 +52,6 @@ export default function createPersistor(store, config) {
 
     var len = storesToProcess.length;
 
-    recordNonFatalError('Non Fatal', 'Saving in store');
-
     // time iterator (read: debounce)
     if (timeIterator === null) {
       timeIterator = setInterval(function () {
@@ -67,6 +66,10 @@ export default function createPersistor(store, config) {
         var endState = transforms.reduce(function (subState, transformer) {
           return transformer.in(subState, key);
         }, stateGetter(store.getState(), key));
+        if (isEmpty(endState)) {
+          Alert.alert('redux-persist/subscribe: Saving an empty value for' + key);
+          recordNonFatalError('Persist Error', 'redux-persist/subscribe: Saving an empty value for' + key);
+        }
         if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key));
       }, debounce);
     }
