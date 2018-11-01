@@ -4,7 +4,7 @@ import {Alert} from 'react-native';
 import createAsyncLocalStorage from './defaults/asyncLocalStorage'
 import { recordNonFatalError } from "./crashlytics";
 
-export default function getStoredState (config, onComplete) {
+export default function getStoredState (deviceID, config, onComplete) {
   let storage = config.storage || createAsyncLocalStorage('local')
   const deserializer = config.serialize === false ? (data) => data : defaultDeserializer
   const blacklist = config.blacklist || []
@@ -22,7 +22,7 @@ export default function getStoredState (config, onComplete) {
     if (err) {
       Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
       console.warn('redux-persist/getStoredState: Error in storage.getAllKeys');
-      recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error in' +
+      recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
         ' storage.getAllKeys ' + err.toString());
       complete(err)
     }
@@ -31,8 +31,8 @@ export default function getStoredState (config, onComplete) {
     let persistKeys = allKeys.filter((key) => key.indexOf(keyPrefix) === 0).map((key) => key.slice(keyPrefix.length))
     let keysToRestore = persistKeys.filter(passWhitelistBlacklist)
 
-    recordNonFatalError('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length);
-    console.log('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length);
+    recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + typeof err !== 'undefined');
+    console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + typeof err !== 'undefined');
 
     let restoreCount = keysToRestore.length
     if (restoreCount === 0) complete(null, restoredState)
@@ -41,7 +41,8 @@ export default function getStoredState (config, onComplete) {
         if (err) {
           Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
           console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
-          recordNonFatalError('Persist Error','redux-persist/getStoredState: Error restoring' +
+          recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error' +
+          ' restoring' +
             ' data for key:' + key + ' ' + err.toString());
         }
         else restoredState[key] = rehydrate(key, serialized)
@@ -62,7 +63,8 @@ export default function getStoredState (config, onComplete) {
     } catch (err) {
       console.warn('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err)
       Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
-      recordNonFatalError('Persist Error','redux-persist/getStoredState: Error in rehydrate' +
+      recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
+      ' rehydrate' +
         ' restoring data for key:' + key + ' ' + (err || '').toString());
     }
 

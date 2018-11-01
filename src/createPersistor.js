@@ -7,7 +7,7 @@ import { recordNonFatalError } from "./crashlytics";
 import { isEmpty } from 'lodash';
 
 
-export default function createPersistor (store, config) {
+export default function createPersistor (deviceID, store, config) {
   // defaults
   const serializer = config.serialize === false ? (data) => data : defaultSerializer
   const deserializer = config.serialize === false ? (data) => data : defaultDeserializer
@@ -62,9 +62,11 @@ export default function createPersistor (store, config) {
         let storageKey = createStorageKey(key)
         let endState = transforms.reduce((subState, transformer) => transformer.in(subState, key), stateGetter(store.getState(), key))
         if(isEmpty(endState)) {
-          recordNonFatalError('Persist Error', 'redux-persist/subscribe: Saving an empty value for' + key)
+          recordNonFatalError('Persist Error', deviceID + 'redux-persist/subscribe: Saving an' +
+          ' empty value' +
+            ' for ' + key)
         }
-        if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key))
+        if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key, deviceID))
       }, debounce)
     }
 
@@ -112,12 +114,13 @@ export default function createPersistor (store, config) {
   }
 }
 
-function warnIfSetError (key) {
+function warnIfSetError (key, deviceID) {
   return function setError (err) {
     if (err) {
       console.warn('Error storing data for key:', key, err);
       Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key);
-      recordNonFatalError('Persist Error', 'redux-persist/warnIfSetError: Error storing data' +
+      recordNonFatalError('Persist Error', deviceID + ' redux-persist/warnIfSetError: Error' +
+        ' storing data' +
         ' for key:' + key + ' ' + (err || '').toString());
     }
   }
