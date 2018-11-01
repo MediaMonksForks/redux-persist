@@ -31,8 +31,8 @@ export default function getStoredState (deviceID, config, onComplete) {
     let persistKeys = allKeys.filter((key) => key.indexOf(keyPrefix) === 0).map((key) => key.slice(keyPrefix.length))
     let keysToRestore = persistKeys.filter(passWhitelistBlacklist)
 
-    recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + typeof err !== 'undefined');
-    console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + typeof err !== 'undefined');
+    recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
+    console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
 
     let restoreCount = keysToRestore.length
     if (restoreCount === 0) complete(null, restoredState)
