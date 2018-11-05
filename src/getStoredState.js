@@ -35,7 +35,7 @@ export default function getStoredState (deviceID, config, onComplete) {
       recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
       console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
 
-      if (keysToRestore !== 0 && keysToRestore.length < whitelist.length) {
+      if (keysToRestore !== 0 && keysToRestore.length - 10 < whitelist.length) {
         recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys Error: less keys' +
           ' found than expected ' + keysToRestore.length + ' retryCount ' + retryCount);
         console.log('Persist Error', deviceID + ' redux-persist/allkeys Error: less keys' +
@@ -44,7 +44,9 @@ export default function getStoredState (deviceID, config, onComplete) {
         retryCount++;
 
         if(retryCount < 10) {
-          run();
+          setTimeout(() => {
+            run();
+          }, 1000);
           return;
         }
       }
