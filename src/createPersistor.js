@@ -62,9 +62,9 @@ export default function createPersistor (deviceID, store, config) {
         let storageKey = createStorageKey(key)
         let endState = transforms.reduce((subState, transformer) => transformer.in(subState, key), stateGetter(store.getState(), key))
         if(isEmpty(endState)) {
-          recordNonFatalError('Persist Error', deviceID + 'redux-persist/subscribe: Saving an' +
-          ' empty value' +
-            ' for ' + key)
+          // recordNonFatalError('Persist Error', deviceID + 'redux-persist/subscribe: Saving an' +
+          // ' empty value' +
+          //   ' for ' + key)
         }
         if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key, deviceID))
       }, debounce)
@@ -91,8 +91,8 @@ export default function createPersistor (deviceID, store, config) {
           state = stateSetter(state, key, value)
         } catch (err) {
           console.warn(`Error rehydrating data for key "${key}"`, subState, err)
-          Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"`);
-          recordNonFatalError('Persist Error', 'redux-persist/adhocRehydrate: Error rehydrating data for key' + key + ' ' + (err || '').toString());
+          // Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"`);
+          // recordNonFatalError('Persist Error', 'redux-persist/adhocRehydrate: Error rehydrating data for key' + key + ' ' + (err || '').toString());
         }
       })
     } else state = incoming
@@ -118,10 +118,10 @@ function warnIfSetError (key, deviceID) {
   return function setError (err) {
     if (err) {
       console.warn('Error storing data for key:', key, err);
-      Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key);
-      recordNonFatalError('Persist Error', deviceID + ' redux-persist/warnIfSetError: Error' +
-        ' storing data' +
-        ' for key:' + key + ' ' + (err || '').toString());
+      // Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key);
+      // recordNonFatalError('Persist Error', deviceID + ' redux-persist/warnIfSetError: Error' +
+      //   ' storing data' +
+      //   ' for key:' + key + ' ' + (err || '').toString());
     }
   }
 }
