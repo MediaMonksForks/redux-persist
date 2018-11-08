@@ -33,12 +33,17 @@ export default function getStoredState(deviceID, config, onComplete) {
         complete(err);
       }
 
+      console.log(whitelist);
+      console.log(keyPrefix);
+
       var persistKeys = allKeys.filter(function (key) {
         return key.indexOf(keyPrefix) === 0;
       }).map(function (key) {
         return key.slice(keyPrefix.length);
       });
       var keysToRestore = persistKeys.filter(passWhitelistBlacklist);
+
+      console.log(keysToRestore);
 
       // recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
       console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
