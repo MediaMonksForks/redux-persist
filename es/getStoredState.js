@@ -26,10 +26,9 @@ export default function getStoredState(deviceID, config, onComplete) {
   function run() {
     storage.getAllKeys(function (err, allKeys) {
       if (err) {
-        // Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
+        Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
         console.log('redux-persist/getStoredState: Error in storage.getAllKeys');
-        // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
-        //   ' storage.getAllKeys ' + err.toString());
+        recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' + ' storage.getAllKeys ' + err.toString());
         complete(err);
       }
 
@@ -69,11 +68,9 @@ export default function getStoredState(deviceID, config, onComplete) {
       keysToRestore.forEach(function (key) {
         storage.getItem(createStorageKey(key), function (err, serialized) {
           if (err) {
-            // Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
+            Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
             console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
-            // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error' +
-            //   ' restoring' +
-            //   ' data for key:' + key + ' ' + err.toString());
+            recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error' + ' restoring' + ' data for key:' + key + ' ' + err.toString());
           } else restoredState[key] = rehydrate(key, serialized);
           completionCount += 1;
           if (completionCount === restoreCount) complete(null, restoredState);
@@ -94,10 +91,8 @@ export default function getStoredState(deviceID, config, onComplete) {
       }, data);
     } catch (err) {
       console.log('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err);
-      // Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
-      // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
-      // ' rehydrate' +
-      //   ' restoring data for key:' + key + ' ' + (err || '').toString());
+      Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
+      recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' + ' rehydrate' + ' restoring data for key:' + key + ' ' + (err || '').toString());
     }
 
     return state;
