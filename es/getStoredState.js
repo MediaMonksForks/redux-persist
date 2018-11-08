@@ -4,9 +4,9 @@ import { KEY_PREFIX } from './constants';
 import { Alert } from 'react-native';
 
 import createAsyncLocalStorage from './defaults/asyncLocalStorage';
-import { recordNonFatalError } from "./crashlytics";
+// import { recordNonFatalError } from "./crashlytics";
 
-export default function getStoredState(config, onComplete) {
+export default function getStoredState(deviceID, config, onComplete) {
   var storage = config.storage || createAsyncLocalStorage('local');
   var deserializer = config.serialize === false ? function (data) {
     return data;
@@ -21,39 +21,63 @@ export default function getStoredState(config, onComplete) {
 
   var restoredState = {};
   var completionCount = 0;
+  // let retryCount = 0;
 
-  storage.getAllKeys(function (err, allKeys) {
-    if (err) {
-      Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
-      console.warn('redux-persist/getStoredState: Error in storage.getAllKeys');
-      recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error in' + ' storage.getAllKeys ' + err.toString());
-      complete(err);
-    }
+  function run() {
+    storage.getAllKeys(function (err, allKeys) {
+      if (err) {
+        // Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
+        console.log('redux-persist/getStoredState: Error in storage.getAllKeys');
+        // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
+        //   ' storage.getAllKeys ' + err.toString());
+        complete(err);
+      }
 
-    var persistKeys = allKeys.filter(function (key) {
-      return key.indexOf(keyPrefix) === 0;
-    }).map(function (key) {
-      return key.slice(keyPrefix.length);
-    });
-    var keysToRestore = persistKeys.filter(passWhitelistBlacklist);
+      var persistKeys = allKeys.filter(function (key) {
+        return key.indexOf(keyPrefix) === 0;
+      }).map(function (key) {
+        return key.slice(keyPrefix.length);
+      });
+      var keysToRestore = persistKeys.filter(passWhitelistBlacklist);
 
-    recordNonFatalError('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
-    console.log('Persist Error', 'redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore);
+      // recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
+      console.log('Persist Error', deviceID + ' redux-persist/allkeys: ' + allKeys + ' ' + keysToRestore.length + ' ' + (typeof err !== 'undefined').toString());
 
-    var restoreCount = keysToRestore.length;
-    if (restoreCount === 0) complete(null, restoredState);
-    keysToRestore.forEach(function (key) {
-      storage.getItem(createStorageKey(key), function (err, serialized) {
-        if (err) {
-          Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
-          console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
-          recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error restoring' + ' data for key:' + key + ' ' + err.toString());
-        } else restoredState[key] = rehydrate(key, serialized);
-        completionCount += 1;
-        if (completionCount === restoreCount) complete(null, restoredState);
+      // if (keysToRestore !== 0 && keysToRestore.length < whitelist.length) {
+      //   // recordNonFatalError('Persist Error', deviceID + ' redux-persist/allkeys Error: less keys' +
+      //   //   ' found than expected ' + keysToRestore.length + ' retryCount ' + retryCount);
+      //   console.log('Persist Error', deviceID + ' redux-persist/allkeys Error: less keys' +
+      //     ' found than expected ' + keysToRestore.length + ' retryCount ' + retryCount);
+      //
+      //   retryCount++;
+      //
+      //   if(retryCount < 10) {
+      //     setTimeout(() => {
+      //       run();
+      //     }, 1000);
+      //     return;
+      //   }
+      // }
+
+      var restoreCount = keysToRestore.length;
+      if (restoreCount === 0) complete(null, restoredState);
+      keysToRestore.forEach(function (key) {
+        storage.getItem(createStorageKey(key), function (err, serialized) {
+          if (err) {
+            // Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
+            console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
+            // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error' +
+            //   ' restoring' +
+            //   ' data for key:' + key + ' ' + err.toString());
+          } else restoredState[key] = rehydrate(key, serialized);
+          completionCount += 1;
+          if (completionCount === restoreCount) complete(null, restoredState);
+        });
       });
     });
-  });
+  }
+
+  run();
 
   function rehydrate(key, serialized) {
     var state = null;
@@ -64,9 +88,11 @@ export default function getStoredState(config, onComplete) {
         return transformer.out(subState, key);
       }, data);
     } catch (err) {
-      console.warn('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err);
-      Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
-      recordNonFatalError('Persist Error', 'redux-persist/getStoredState: Error in rehydrate' + ' restoring data for key:' + key + ' ' + (err || '').toString());
+      console.log('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err);
+      // Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
+      // recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
+      // ' rehydrate' +
+      //   ' restoring data for key:' + key + ' ' + (err || '').toString());
     }
 
     return state;
