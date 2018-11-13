@@ -87,7 +87,7 @@ export default function createPersistor (deviceID, store, config) {
           state = stateSetter(state, key, value)
         } catch (err) {
           console.warn(`Error rehydrating data for key "${key}"`, subState, err)
-          Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"`);
+          Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"  ${(err || '').toString()}`);
           recordNonFatalError('Persist Error', 'redux-persist/adhocRehydrate: Error rehydrating data for key' + key + ' ' + (err || '').toString());
         }
       })
@@ -114,7 +114,7 @@ function warnIfSetError (key, deviceID) {
   return function setError (err) {
     if (err) {
       console.warn('Error storing data for key:', key, err);
-      Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key);
+      Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key + (err || '').toString());
       recordNonFatalError('Persist Error', deviceID + ' redux-persist/warnIfSetError: Error' +
         ' storing data' +
         ' for key:' + key + ' ' + (err || '').toString());

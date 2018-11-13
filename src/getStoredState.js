@@ -22,7 +22,7 @@ export default function getStoredState (deviceID, config, onComplete) {
   function run() {
     storage.getAllKeys((err, allKeys) => {
       if (err) {
-        Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys');
+        Alert.alert('redux-persist/getStoredState: Error in storage.getAllKeys ' + (err || '').toString());
         console.log('redux-persist/getStoredState: Error in storage.getAllKeys');
         recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
           ' storage.getAllKeys ' + err.toString());
@@ -61,7 +61,7 @@ export default function getStoredState (deviceID, config, onComplete) {
       keysToRestore.forEach((key) => {
         storage.getItem(createStorageKey(key), (err, serialized) => {
           if (err) {
-            Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key);
+            Alert.alert('redux-persist/getStoredState: Error restoring data for key:' + key + ' ' + (err || '').toString());
             console.warn('redux-persist/getStoredState: Error restoring data for key:', key, err);
             recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error' +
               ' restoring' +
@@ -86,8 +86,8 @@ export default function getStoredState (deviceID, config, onComplete) {
         return transformer.out(subState, key)
       }, data)
     } catch (err) {
-      console.log('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err)
-      Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key);
+      console.log('redux-persist/getStoredState: Error in rehydrate restoring data for key:', key, err);
+      Alert.alert('redux-persist/getStoredState: Error in rehydrate restoring data for key:' + key + ' ' + (err || '').toString());
       recordNonFatalError('Persist Error', deviceID + ' redux-persist/getStoredState: Error in' +
       ' rehydrate' +
         ' restoring data for key:' + key + ' ' + (err || '').toString());
