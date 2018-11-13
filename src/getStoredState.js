@@ -2,7 +2,7 @@ import { KEY_PREFIX } from './constants'
 import {Alert} from 'react-native';
 
 import createAsyncLocalStorage from './defaults/asyncLocalStorage'
-// import { recordNonFatalError } from "./crashlytics";
+import { recordNonFatalError } from "./crashlytics";
 
 export default function getStoredState (deviceID, config, onComplete) {
   let storage = config.storage || createAsyncLocalStorage('local')
