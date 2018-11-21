@@ -2,12 +2,11 @@ import { KEY_PREFIX, REHYDRATE } from './constants'
 import createAsyncLocalStorage from './defaults/asyncLocalStorage'
 import purgeStoredState from './purgeStoredState'
 import stringify from 'json-stringify-safe'
-import {Alert} from 'react-native';
 import { recordNonFatalError } from "./crashlytics";
 import { isEmpty } from 'lodash';
 
 
-export default function createPersistor (deviceID, store, config) {
+export default function createPersistor (store, config) {
   // defaults
   const serializer = config.serialize === false ? (data) => data : defaultSerializer
   const deserializer = config.serialize === false ? (data) => data : defaultDeserializer
@@ -62,7 +61,7 @@ export default function createPersistor (deviceID, store, config) {
         let storageKey = createStorageKey(key)
         let endState = transforms.reduce((subState, transformer) => transformer.in(subState, key), stateGetter(store.getState(), key))
 
-        if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key, deviceID))
+        if (typeof endState !== 'undefined') storage.setItem(storageKey, serializer(endState), warnIfSetError(key))
       }, debounce)
     }
 
@@ -87,7 +86,6 @@ export default function createPersistor (deviceID, store, config) {
           state = stateSetter(state, key, value)
         } catch (err) {
           console.warn(`Error rehydrating data for key "${key}"`, subState, err)
-          Alert.alert(`redux-persist/adhocRehydrate: Error rehydrating data for key "${key}"  ${(err || '').toString()}`);
           recordNonFatalError('Persist Error', 'redux-persist/adhocRehydrate: Error rehydrating data for key' + key + ' ' + (err || '').toString());
         }
       })
@@ -106,16 +104,15 @@ export default function createPersistor (deviceID, store, config) {
     rehydrate: adhocRehydrate,
     pause: () => { paused = true },
     resume: () => { paused = false },
-    purge: (keys) => purgeStoredState(deviceID, {storage, keyPrefix}, keys)
+    purge: (keys) => purgeStoredState({storage, keyPrefix}, keys)
   }
 }
 
-function warnIfSetError (key, deviceID) {
+function warnIfSetError (key) {
   return function setError (err) {
     if (err) {
       console.warn('Error storing data for key:', key, err);
-      Alert.alert('redux-persist/warnIfSetError: Error storing data for key:' + key + (err || '').toString());
-      recordNonFatalError('Persist Error', deviceID + ' redux-persist/warnIfSetError: Error' +
+      recordNonFatalError('Persist Error', 'redux-persist/warnIfSetError: Error' +
         ' storing data' +
         ' for key:' + key + ' ' + (err || '').toString());
     }
