@@ -1,10 +1,6 @@
 import { KEY_PREFIX } from './constants';
-import { recordNonFatalError } from "./crashlytics";
 
-export default function purgeStoredState(deviceID, config, keys) {
-  // recordNonFatalError('Persist Error', deviceID + ': purgeStoredState ' + keys);
-  // console.log('purgeStoredState ' + keys);
-
+export default function purgeStoredState(config, keys) {
   var storage = config.storage;
   var keyPrefix = config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX;
 
